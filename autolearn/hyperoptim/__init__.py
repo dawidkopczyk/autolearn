@@ -1,1 +1,1 @@
-from hyperoptimizer import *
+from .hyperoptimizer import *

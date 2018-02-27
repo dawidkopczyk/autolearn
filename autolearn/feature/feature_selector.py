@@ -11,8 +11,8 @@ try:
 except ImportError:  
     _IS_BORUTA_INSTALLED = False
 
-#from ..model.regressor import Regressor
-#from ..model.classifier import Classifier
+from ..model.regressor import Regressor
+from ..model.classifier import Classifier
 
 class FeatureSelector():
 

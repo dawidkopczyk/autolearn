@@ -1,1 +1,1 @@
-from feature_selector import *
+from .feature_selector import *

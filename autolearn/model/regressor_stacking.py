@@ -8,7 +8,7 @@ import numpy as np
 
 from sklearn.model_selection import check_cv
 
-#from .regressor import Regressor
+from .regressor import Regressor
 
 class RegressorStacking(Regressor):
     """Stacking regressor"""
@@ -107,10 +107,10 @@ class RegressorStacking(Regressor):
             raise ValueError("base_save must be a boolean.")
 
         self.base_save_files = base_save_files
-        if type(self.base_save_files) != list and self.base_copy_idx is not None:
+        if type(self.base_save_files) != list and self.base_save_files is not None:
             raise ValueError("base_save_files must be either None or a list of tuples.")
             
-        if self.base_copy_idx is not None:
+        if self.base_save_files is not None:
             if len(self.base_save_file) != len(self.base_estimators):
                 raise ValueError("base_save_files must be the same size as base_estimators.")
 
@@ -179,9 +179,9 @@ class RegressorStacking(Regressor):
         
         if 'base_save_files' in params.keys():
             self.base_save_files = params['base_save_files']
-            if type(self.base_save_files) != list and self.base_copy_idx is not None:
+            if type(self.base_save_files) != list and self.base_save_files is not None:
                 raise ValueError("base_save_files must be either None or a list of tuples.")
-            if self.base_copy_idx is not None:
+            if self.base_save_files is not None:
                 if len(self.base_save_file) != len(self.base_estimators):
                     raise ValueError("base_save_files must be the same size as base_estimators.")
                 
@@ -209,7 +209,7 @@ class RegressorStacking(Regressor):
             
         Returns
         -------
-        y_pred : array-like or sparse matrix of shape = [n_samples, n_base_estimators]
+        self.__X_meta_train : array-like or sparse matrix of shape = n_samples, n_base_estimators * (n_classes - int(self.base_drop_first))]
             Training meta-features 
         """
 
@@ -223,13 +223,13 @@ class RegressorStacking(Regressor):
             
             if type(est) == tuple:
                 if(self.stacking_verbose):
-                    print("Loading estimator n°" + str(c+1) + "\n")
+                    print("\n" + "Loading estimator n°" + str(c+1))
                 
                 y_pred = np.load(est[0])  
   
             elif X is not None and y is not None:
                 if(self.stacking_verbose):
-                    print("Fitting estimator n°" + str(c+1) + "\n")
+                    print("\n" + "Fitting estimator n°" + str(c+1))
     
                 y_pred = est.cross_val_predict(X, y, cv=cv, scoring=scoring, **kwargs)
                 est.fit(X, y, **kwargs)
@@ -249,7 +249,7 @@ class RegressorStacking(Regressor):
         self.__y = y
         self.__fittransformOK = True    
         
-        return y_pred
+        return self.__X_meta_train
 
     def transform(self, X=None):
 
@@ -262,10 +262,12 @@ class RegressorStacking(Regressor):
             
         Returns
         -------
-        y_pred : array-like or sparse matrix of shape = [n_samples, n_base_estimators]
+        self.__X_meta_test : array-like or sparse matrix of shape = n_samples, n_base_estimators * (n_classes - int(self.base_drop_first))]
             Testing meta-features 
         """
 
+        self.__X_meta_test = None
+        
         if not self.__fittransformOK:
             raise ValueError("Call fit_transform before !")
 
@@ -273,13 +275,13 @@ class RegressorStacking(Regressor):
             
             if type(est) == tuple:
                 if(self.stacking_verbose):
-                    print("Loading estimator n°" + str(c+1) + "\n")
+                    print("\n" + "Loading estimator n°" + str(c+1))
                     
                 y_pred = np.load(est[1])   
   
             elif X is not None:
                 if(self.stacking_verbose):
-                    print("Predicting estimator n°" + str(c+1) + "\n")
+                    print("\n" + "Predicting estimator n°" + str(c+1))
     
                 y_pred = est.predict(X)
                 
@@ -297,7 +299,7 @@ class RegressorStacking(Regressor):
         
         self.__transformOK = True
         
-        return y_pred
+        return self.__X_meta_test
     
     def fit(self, X=None, y=None, **kwargs):
         if X is not None and y is not None:

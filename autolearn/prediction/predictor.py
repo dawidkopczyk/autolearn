@@ -9,13 +9,13 @@ import time
 
 from sklearn.pipeline import Pipeline
 
-#from ..encoding.encoder_missing import EncoderMissing
-#from ..encoding.encoder_categorical import EncoderCategorical
-#from ..encoding.feature_selector import FeatureSelector
-#from ..model.classifier_stacking import ClassifierStacking
-#from ..model.classifier import Classifier
-#from ..model.regressor_stacking import RegressorStacking
-#from ..model.regressor import Regressor
+from ..encoding.encoder_missing import EncoderMissing
+from ..encoding.encoder_categorical import EncoderCategorical
+from ..feature.feature_selector import FeatureSelector
+from ..model.classifier_stacking import ClassifierStacking
+from ..model.classifier import Classifier
+from ..model.regressor_stacking import RegressorStacking
+from ..model.regressor import Regressor
 
 class Predictor():
 
@@ -192,14 +192,16 @@ class Predictor():
     
             if "ce__strategy" in params:
                 if params["ce__strategy"] == "entity_embedding":
-                    cache = True
+                    #cache = True
+                    pass
                 else:
                     pass
             else:
                 pass
             
             if len(STCK) != 0:
-                cache = True
+                #cache = True
+                pass
             else:
                 pass
             
@@ -234,8 +236,8 @@ class Predictor():
                     
                 try:
                     pp.fit(X, y)
-                except:
-                    raise ValueError("Pipeline cannot be fitted")
+                except Exception as e:
+                    raise ValueError("Pipeline cannot be fitted: {}".format(e))
 
                 if self.verbose:
                     print("Time: %s seconds"%(time.time() - start_time))

@@ -97,7 +97,8 @@ class Classifier(object):
         self.__random_state = random_state
         if type(self.__random_state) != int and self.__random_state is not None:
             raise ValueError("random_state must be either None or an integer.")
-        
+        self.set_params(random_state=self.__random_state)
+                
         self.__fitOK = False
         self.__bagged_est = None
         
@@ -423,7 +424,7 @@ class Classifier(object):
             X_cv = X[cv_index]
             y_cv = y[cv_index]
             
-            est = self.get_estimator()
+            est = self.get_estimator_copy()
             est.fit(X_train, y_train, **kwargs)
             y_pred_proba_cv = est.predict_proba(X_cv)
             

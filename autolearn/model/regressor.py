@@ -94,6 +94,7 @@ class Regressor(object):
         self.__random_state = random_state
         if type(self.__random_state) != int and self.__random_state is not None:
             raise ValueError("random_state must be either None or an integer.")
+        self.set_params(random_state=self.__random_state)
         
         self.__fitOK = False
         self.__bagged_est = None
